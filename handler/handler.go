@@ -3,10 +3,12 @@ package handler
 import (
     "io"
     "os"
+    "os/exec"
     "fmt"
     "net/http"
+
     "github.com/labstack/echo"
-    "os/exec"
+    "github.com/satori/go.uuid"
 )
 
 type MarkdownData struct {
@@ -19,14 +21,19 @@ func Default(c echo.Context) (err error) {
         return
     }
 
-    dst, err := os.Create("mdfiles/002.md")
+    uu, err := uuid.NewV4()
+    if err != nil {
+        return err
+    }
+
+    dst, err := os.Create("mdfiles/" + uu.String())
     if err != nil {
         return err
     }
 
     dst.Write(([]byte) (md.MD))
-	
-    out, err := exec.Command("python", "markdown.py", "mdfiles/002.md").Output()
+
+    out, err := exec.Command("python", "markdown.py", "mdfiles/" + uu.String()).Output()
     if err != nil {
         return err
     }
@@ -47,7 +54,12 @@ func File(c echo.Context) error {
     }
     defer src.Close()
 
-    dst, err := os.Create("mdfiles/001.md")
+    uu, err := uuid.NewV4()
+    if err != nil {
+        return err
+    }
+
+    dst, err := os.Create("mdfiles/" + uu.String())
     if err != nil {
         return err
     }
@@ -55,8 +67,8 @@ func File(c echo.Context) error {
     if _, err = io.Copy(dst, src); err != nil {
         return err
     }
-	
-    out, err := exec.Command("python", "markdown.py", "mdfiles/001.md").Output()
+
+    out, err := exec.Command("python", "markdown.py", "mdfiles/" + uu.String()).Output()
     if err != nil {
         return err
     }
