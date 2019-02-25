@@ -6,7 +6,7 @@ import (
     "fmt"
     "net/http"
     "github.com/labstack/echo"
-    // "os/exec"
+    "os/exec"
 )
 
 type MarkdownData struct {
@@ -18,9 +18,22 @@ func Default(c echo.Context) (err error) {
     if err = c.Bind(md); err != nil {
         return
     }
+
+    dst, err := os.Create("mdfiles/002.md")
+    if err != nil {
+        return err
+    }
+
+    dst.Write(([]byte) (md.MD))
 	
-    return c.JSON(http.StatusOK, md.MD)
+    out, err := exec.Command("python", "markdown.py", "mdfiles/002.md").Output()
+    if err != nil {
+        return err
+    }
+
+    return c.HTML(http.StatusOK, fmt.Sprintf("%s", out))
 }
+
 
 func File(c echo.Context) error {
     file, err := c.FormFile("file")
@@ -43,5 +56,10 @@ func File(c echo.Context) error {
         return err
     }
 	
-    return c.HTML(http.StatusOK, fmt.Sprintf("<p>File %s uploaded successfully", file.Filename))
+    out, err := exec.Command("python", "markdown.py", "mdfiles/001.md").Output()
+    if err != nil {
+        return err
+    }
+
+    return c.HTML(http.StatusOK, fmt.Sprintf("%s", out))
 }

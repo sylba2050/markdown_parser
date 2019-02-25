@@ -13,8 +13,7 @@ func main() {
     e.Use(middleware.Recover())
     e.Use(middleware.Logger())
 
-    e.GET("/md", handler.Default)
-    e.POST("/md", handler.Default)
+    e.POST("api/md", handler.Default)
 
     e.POST("api/md/file", handler.File)
 
