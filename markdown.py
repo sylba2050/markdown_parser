@@ -3,11 +3,20 @@ import mistune
 import argparse
 import glob
 
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import HtmlFormatter
+
 class HighlightRenderer(mistune.Renderer):
     def block_code(self, code, lang):
         if not lang:
             return '\n<pre><code>{}</code></pre>\n'.format(mistune.escape(code))
-        return '\n<pre><code class="{}">{}</code></pre>\n'.format(lang, mistune.escape(code))
+
+        lexer = get_lexer_by_name("python", stripall=True)
+        formatter = HtmlFormatter(linenos=True, cssclass="source")
+        html = highlight(code, lexer, formatter)
+
+        return '\n<pre><code class="{}">{}</code></pre>\n'.format(lang, html)
 
 
 def markdown2html(path):
