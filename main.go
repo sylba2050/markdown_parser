@@ -12,6 +12,7 @@ func main() {
 
     e.Use(middleware.Recover())
     e.Use(middleware.Logger())
+    e.Use(middleware.CORS())
 
     e.POST("api/md", handler.Default)
 
