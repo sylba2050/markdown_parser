@@ -18,7 +18,7 @@ type MarkdownData struct {
 func Default(c echo.Context) (err error) {
     md := new(MarkdownData)
     if err = c.Bind(md); err != nil {
-        return
+        return err
     }
 
     uu, err := uuid.NewV4()
